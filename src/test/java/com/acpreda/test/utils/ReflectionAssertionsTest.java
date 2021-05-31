@@ -62,4 +62,11 @@ class ReflectionAssertionsTest {
                 ReflectionAssertions.assertHasMethod(NoFieldSupportClass.class, "setAttrib"));
     }
 
+    @Test
+    @DisplayName("Should reject when class constructor throws exception")
+    void should_reject_when_class_constructor_throws_exception() {
+        assertThrows(Throwable.class, () -> ReflectionAssertions.assertIsPojo(ConstThrowsException.class));
+    }
+
+
 }
