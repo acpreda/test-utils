@@ -8,9 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ReflectionAssertionsTest {
 
     @Test
-    @DisplayName("Verificación de anotación por herencia")
-    void debe_detectar_anotaciones_por_herencia() {
+    @DisplayName("Should accept annotated classes")
+    void should_accept_annotated_classes() {
         ReflectionAssertions.assertIsAnnotated(AnnotatedClass.class, TestingAnnotation.class);
+    }
+
+    @Test
+    @DisplayName("Should reject not annotated classes")
+    void should_reject_not_annotated_classes() {
         assertThrows(
                 Throwable.class,
                 () -> ReflectionAssertions.assertIsAnnotated(
