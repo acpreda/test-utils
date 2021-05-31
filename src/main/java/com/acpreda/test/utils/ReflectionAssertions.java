@@ -117,7 +117,7 @@ public class ReflectionAssertions {
     public static void assertHasDefaultConstructor(Class<?> subject) {
         try {
             subject.getConstructor();
-        } catch (NoSuchMethodException e) {
+        } catch (Exception ignored) {
             fail("Does not have default constructor: " + subject.getName());
         }
     }
