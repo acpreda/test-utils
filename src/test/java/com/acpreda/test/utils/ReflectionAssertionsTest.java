@@ -46,4 +46,20 @@ class ReflectionAssertionsTest {
         assertThrows(Throwable.class, () -> ReflectionAssertions.assertIsPojo(NoFieldSupportClass.class));
     }
 
+    @Test
+    @DisplayName("Should accept when method is present")
+    void should_accept_when_method_is_present() {
+        ReflectionAssertions.assertHasMethod(NoFieldSupportClass.class, "getAttrib");
+        ReflectionAssertions.assertHasMethod(NoFieldSupportClass.class, "setAttrib", String.class);
+    }
+
+    @Test
+    @DisplayName("Should reject when method is not present")
+    void should_reject_when_method_is_not_present() {
+        assertThrows(Throwable.class, () ->
+                ReflectionAssertions.assertHasMethod(NoFieldSupportClass.class, "betAttrib"));
+        assertThrows(Throwable.class, () ->
+                ReflectionAssertions.assertHasMethod(NoFieldSupportClass.class, "setAttrib"));
+    }
+
 }
