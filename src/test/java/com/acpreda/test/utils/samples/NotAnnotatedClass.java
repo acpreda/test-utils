@@ -1,4 +1,4 @@
-package com.acpreda.test.utils;
+package com.acpreda.test.utils.samples;
 
 public interface NotAnnotatedClass {
 }

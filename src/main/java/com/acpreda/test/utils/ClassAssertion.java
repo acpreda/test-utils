@@ -13,13 +13,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-/**
- * Utility class that provides assertions
- *
- * @author Arturo Cruz
- * @since 1.0.0
- */
-public class ReflectionAssertions {
+public class ClassAssertion {
 
     private static final String TEST_STRING = "TEST_STRING";
     private static final Integer TEST_INTEGER = 1443;
@@ -40,27 +34,37 @@ public class ReflectionAssertions {
         TEST_DATA.put(LocalDateTime.class, TEST_LOCAL_DATE_TIME);
     }
 
-    /**
-     * Asserts that the subject class is annotated with the annotation class
-     *
-     * @param subject    The class to be checked
-     * @param annotation The annotation class that has to be present in the subject class
-     */
-    public static void assertIsAnnotated(Class<?> subject, Class<? extends Annotation> annotation) {
-        Annotation x = subject.getAnnotation(annotation);
-        if (x == null) {
-            fail("Class " + subject.getName() + " is not annotated with " + annotation.getName() +
-                    ". Maybe the retention policy is not RUNTIME");
-        }
+    private final Class<?> subject;
+
+    private ClassAssertion(Class<?> subject) {
+        this.subject = subject;
     }
 
-    /**
-     * Inspects the subject class to assert that it is actually a class that follows the POJO pattern
-     *
-     * @param subject The class to be inspected
-     */
-    public static void assertIsPojo(Class<?> subject) {
-        assertHasDefaultConstructor(subject);
+    public static ClassAssertion of(Class<?> subject) {
+        return new ClassAssertion(subject);
+    }
+
+    public Class<?> getSubject() {
+        return this.subject;
+    }
+
+    public AnnotationAssertion isAnnotated(Class<? extends Annotation> annotation) {
+        Annotation extracted = subject.getAnnotation(annotation);
+        assertNotNull(extracted);
+        return AnnotationAssertion.of(extracted);
+    }
+
+    public ClassAssertion hasDefaultConstructor() {
+        try {
+            subject.getConstructor();
+        } catch (Exception ignored) {
+            fail("Does not have default constructor: " + subject.getName());
+        }
+        return this;
+    }
+
+    public ClassAssertion isPojo() {
+        hasDefaultConstructor();
         Object obj = null;
         try {
             Constructor<?> constructor = subject.getConstructor();
@@ -107,19 +111,7 @@ public class ReflectionAssertions {
                 fail("Returned value is not the testData: " + getterName);
             }
         }
-    }
-
-    /**
-     * Inspects the subject class looking for a constructor with no arguments
-     *
-     * @param subject The class to be inspected
-     */
-    public static void assertHasDefaultConstructor(Class<?> subject) {
-        try {
-            subject.getConstructor();
-        } catch (Exception ignored) {
-            fail("Does not have default constructor: " + subject.getName());
-        }
+        return this;
     }
 
     private static boolean isNotProperty(Field field) {
@@ -139,18 +131,20 @@ public class ReflectionAssertions {
         return "get" + fieldName.substring(0, 1).toUpperCase(Locale.ROOT) + fieldName.substring(1);
     }
 
-    /**
-     * Inspects a subject class looking for a specific method
-     *
-     * @param subject        The class to be inspected
-     * @param methodName     The method name
-     * @param parameterTypes The parameters of the method
-     */
-    public static void assertHasMethod(Class<?> subject, String methodName, Class<?>... parameterTypes) {
+    public MethodAssertion method(String methodName, Class<?>... parameterTypes) {
         try {
-            subject.getDeclaredMethod(methodName, parameterTypes);
+            Method method = subject.getDeclaredMethod(methodName, parameterTypes);
+            return MethodAssertion.of(method);
         } catch (NoSuchMethodException e) {
             fail("Method not found in " + subject.getName() + ": " + methodName);
         }
+        return null;
+    }
+
+    public ClassAssertion assignableFrom(Class<?> assignable) {
+        if (!assignable.isAssignableFrom(subject)) {
+            fail("Expected to be assignable from " + assignable.getName());
+        }
+        return this;
     }
 }
