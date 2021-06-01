@@ -4,6 +4,7 @@ public class NoSetClass {
 
     private String attrib;
 
+    @TestingAnnotation
     public String getAttrib() {
         return attrib;
     }

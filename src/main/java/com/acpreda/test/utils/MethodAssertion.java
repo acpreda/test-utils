@@ -17,10 +17,6 @@ public class MethodAssertion {
         return new MethodAssertion(method);
     }
 
-    public Method getSubject() {
-        return subject;
-    }
-
     public AnnotationAssertion isAnnotated(Class<? extends Annotation> annotation) {
         Annotation extracted = subject.getAnnotation(annotation);
         assertNotNull(extracted);
