@@ -64,4 +64,11 @@ public class AnnotationMethodAssertion {
             fail("Expected " + expectedValue + " but " + annotationValue);
         }
     }
+
+    public void assertNotNull() {
+        Object annotationValue = getAnnotationValue();
+        if (annotationValue == null) {
+            fail("Expected not null");
+        }
+    }
 }

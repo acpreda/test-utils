@@ -2,9 +2,9 @@ package com.acpreda.test.utils.samples;
 
 public class NoSetClass {
 
+    @TestingAnnotation
     private String attrib;
 
-    @TestingAnnotation
     public String getAttrib() {
         return attrib;
     }

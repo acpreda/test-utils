@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -147,4 +148,26 @@ public class ClassAssertion {
         }
         return this;
     }
+
+    public FieldAssertion field(String name) {
+        Field field = null;
+        try {
+            field = subject.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            fail("Field " + name + " not found");
+        }
+        return FieldAssertion.of(field);
+    }
+
+    public ClassAssertion eachProperty(Consumer<FieldAssertion> consumer) {
+        Field[] fields = subject.getDeclaredFields();
+        for (Field field : fields) {
+            if (isNotProperty(field)) {
+                continue;
+            }
+            consumer.accept(FieldAssertion.of(field));
+        }
+        return this;
+    }
+
 }
